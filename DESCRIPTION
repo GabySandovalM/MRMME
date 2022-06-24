@@ -1,0 +1,27 @@
+Package: MRMME
+Title: Multivariate Regression Models with Measurement Errors
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Gabriela",
+           family = "Sandoval",
+           role = c("aut", "cre"),
+           email = "fgsandoval@uc.cl",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Fit multivariate regression when covariates present measurement errors. Both Normal Distribution and Generalized Hyperbolic Distribution are considered. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Imports: 
+    GGally,
+    ggplot2,
+    ks,
+    matrixcalc,
+    mvtnorm,
+    numDeriv,
+    patchwork,
+    pracma,
+    Rfast
+Depends: 
+    R (>= 2.10)
