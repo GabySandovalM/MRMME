@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "fgsandoval@uc.cl",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Fit multivariate regression when covariates present measurement errors. Both Normal Distribution and Generalized Hyperbolic Distribution are considered. 
+Description: Fit multivariate regression when covariates present measurement errors.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
