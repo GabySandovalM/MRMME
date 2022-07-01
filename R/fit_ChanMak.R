@@ -1,9 +1,8 @@
-#' Fitting via Chan and Mak (1984)
+#' Fitting MRMME via Chan and Mak estimators
 #'
-#' @param X covariates vector
-#' @param Y response variable vector
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variable matrix. It has dimension n x q.
 #'
-#' @examples
 fit_ChanMak <- function(X, Y) {
   X <- as.matrix(X)
   Y <- as.matrix(Y)
@@ -13,7 +12,6 @@ fit_ChanMak <- function(X, Y) {
   p <- dim(X)[2]
   r <- p + q
   d <- (p + 1) * (2 + p + 2 * q) / 2
-
 
   # S, D and R
   z_bar <- colMeans(Z)
@@ -50,7 +48,7 @@ fit_ChanMak <- function(X, Y) {
   Sigma_hat <- 0.5 * (Sigma_hat + t(Sigma_hat))
 
   theta <- c(a_hat,B_hat,phi_hat,mu_hat, matrixcalc::vech(Sigma_hat))
-  names(theta) <- nam(p,q)
+  names(theta) <- nam2(p,q)
 
   AIC <- 2 * d - 2 * logL(theta, X = X, Y = Y)
   BIC <- d * log(n) - 2 * logL(theta, X = X, Y = Y)
@@ -70,7 +68,8 @@ fit_ChanMak <- function(X, Y) {
     "logL" = logLz,
     #"d" = d,
     "X" = X,
-    "Y" = Y
+    "Y" = Y,
+    "iter" = "-"
   )
   res
 }

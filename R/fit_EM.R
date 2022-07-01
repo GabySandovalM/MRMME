@@ -1,11 +1,10 @@
-#' Fitting via EM algorithm
+#' Fitting MRMME via EM algorithm.
 #'
-#' @param X covariates vector
-#' @param Y response variable vector
-#' @param crit
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variable matrix. It has dimension n x q.
+#' @param crit convergence criterion. Default is 1e-10.
 #'
 #'
-#' @examples
 fit_EM <- function(X, Y, crit = 1e-10) {
   X <- as.matrix(X)
   Y <- as.matrix(Y)
@@ -18,9 +17,9 @@ fit_EM <- function(X, Y, crit = 1e-10) {
 
 
 # Initial values ----------------------------------------------------------
-  mod_lm <- lm(Y ~ X)
-  a <- matrix(coef(mod_lm)[1,],ncol=1) # lm
-  B <- t(coef(mod_lm)[-1,]) # lm
+  mod_lm <- stats::lm(Y ~ X)
+  a <- matrix(stats::coef(mod_lm)[1,],ncol=1) # lm
+  B <- t(stats::coef(mod_lm)[-1,]) # lm
   phi <- 1
   mu_x <- colMeans(X) # observed
   Sigma_x <- stats::cov(X) # observed
@@ -95,7 +94,7 @@ fit_EM <- function(X, Y, crit = 1e-10) {
     dif  <- abs((logL_k1 / logL_k) - 1)
     logL_k <- logL_k1
   }
-  names(theta_est) <- nam(p, q)
+  names(theta_est) <- nam2(p, q)
 
 # Results -----------------------------------------------------------------
 

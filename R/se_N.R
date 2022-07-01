@@ -1,13 +1,13 @@
-#' Title
+#' Compute standard errors for the parameter estimates
 #'
-#' @param theta
-#' @param X
-#' @param Y
-#' @param type
+#' @param theta a vector with teh parameter estimates.
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variable matrix. It has dimension n x q.
+#' @param type the type of estimator of the Fisher information matrix.
 #'
-#' @return
+#' @return a list with the covariance matrix of the parameters estimates and
+#' a vector with standard errors.
 #'
-#' @examples
 se_N <- function(theta, X, Y, type = "emp"){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
@@ -25,7 +25,7 @@ se_N <- function(theta, X, Y, type = "emp"){
   se <- sqrt(diag(D))
   colnames(D) <- nam(p,q)
   rownames(D) <- nam(p,q)
-  names(se) <- nam(p,q)
+  names(se) <- nam2(p,q)
   res <- list("covmat" = D,
               "se" = se)
   res
