@@ -126,16 +126,17 @@ influence_mrmme <- function(theta, X, Y) {
   inf_2 <- which(F_inf_2 > cut_point_2)
 
   # Plot scheme 1----
+  ind1 <- 1:length(F_inf_1) #index
   p1 <-
-    ggplot(data.frame(F_inf_1, ind = 1:length(F_inf_1)), aes(label = ind)) +
+    ggplot(data.frame(F_inf_1, ind1), aes(label = ind1)) +
     #scale_y_continuous(limits = c(0,1)) +
     geom_hline(aes(yintercept = cut_point_1), col = "red") +
-    geom_point(aes(x = ind, y = F_inf_1)) +
+    geom_point(aes(x = ind1, y = F_inf_1)) +
     labs(x = "", y = "F values", title = "Scheme I") +
     geom_text(aes(
-      x = ind,
+      x = ind1,
       y = F_inf_1,
-      label = ifelse(F_inf_1 >= cut_point_1, ind, "")
+      label = ifelse(F_inf_1 >= cut_point_1, ind1, "")
     ),
     hjust = 0,
     vjust = 1,
@@ -144,18 +145,18 @@ influence_mrmme <- function(theta, X, Y) {
 
 
   # Plot scheme 2----
-
+  ind2 <- 1:length(F_inf_2) #index
   p2 <-
-    ggplot(data.frame(F_inf_2, ind = 1:length(F_inf_2)), aes(label = ind)) +
+    ggplot(data.frame(F_inf_2, ind2), aes(label = ind2)) +
     #scale_y_continuous(limits = c(0,1)) +
     geom_hline(aes(yintercept = cut_point_2), col = "red") +
-    geom_point(aes(x = ind, y = F_inf_2)) +
+    geom_point(aes(x = ind2, y = F_inf_2)) +
     labs(x = "", y = "F values", title = "Scheme II") +
     geom_text(
       aes(
-        x = ind,
+        x = ind2,
         y = F_inf_2,
-        label = ifelse(F_inf_2 > cut_point_2, ind, "")
+        label = ifelse(F_inf_2 > cut_point_2, ind2, "")
       ),
       hjust = 0,
       vjust = 1,
