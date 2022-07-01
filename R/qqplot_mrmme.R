@@ -1,13 +1,16 @@
-#' Qqplot of the trasnformed distances
+#' QQ-plot of the transformed distances.
 #'
-#' @param X
-#' @param Y
-#' @param theta
-#' @param nsim by default
-#' @param conf by default
-#' @param plot.all
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variables matrix. It has dimension n x q.
+#' @param theta a vector with teh parameter estimates.
+#' @param nsim A numeric value that indicate the number of simulation used to compute the envelopes.
+#' By default are 50.
+#' @param conf A numeric value between 0 and 1, that indicate the confidence level used to compute the envelopes.
+#' By default is 0.95
+#' @param plot.all if `TRUE` displays the qq-plot of Z, Y and X. If `FALSE` (the default) displays the qq-plot of Z.
 #'
-#' @examples
+#' @import ggplot2
+#' @import patchwork
 qqplot_Nmrmme <-
   function(X,
            Y,
@@ -58,7 +61,6 @@ qqplot_Nmrmme <-
     bandY <- bands$bandY
     bandZ <- bands$bandZ
 
-    #par(mfrow=c(1,3))
     #Grafico de Z
     plots <- list()
     plots[["Z"]]  <- ggplot2::ggplot(data.frame(cbind(wh$Z, bandZ))) +
@@ -85,7 +87,12 @@ qqplot_Nmrmme <-
       ggplot2::labs(title = "Y")
 
     if (plot.all) {
-      library(patchwork)
+      if (!requireNamespace("patchwork", quietly = TRUE)) {
+        stop(
+          "Package \"patchwork\" must be installed to use this function.",
+          call. = FALSE
+        )
+      }
       (plots$Z | (plots$X / plots$Y)) +
         patchwork::plot_annotation(title = "QQ-plot of the transformed distances")
     } else {
