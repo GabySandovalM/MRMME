@@ -30,9 +30,9 @@ influence.mrmme <- function(model){
   cat('\n')
   #cat('Method: Case-Deletion')
   cat('\n')
-  devAskNewPage(TRUE)
+  grDevices::devAskNewPage(TRUE)
   print(ip$plot)
-  devAskNewPage(options("device.ask.default")[[1]])
+  grDevices::devAskNewPage(options("device.ask.default")[[1]])
 
   # Output ------------------------------------------------------------------
   #list_out = list(im = ip) #elegir obj para el usuario
