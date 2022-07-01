@@ -2,7 +2,7 @@
 #'
 #' @param theta a vector with teh parameter estimates.
 #' @param X covariates matrix. It has dimension n x p.
-#' @param Y response variable matrix. It has dimension n x q.
+#' @param Y response variables matrix. It has dimension n x q.
 #' @param type the type of estimator of the Fisher information matrix.
 #'
 #' @return a list with the covariance matrix of the parameters estimates and

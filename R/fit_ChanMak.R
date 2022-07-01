@@ -1,7 +1,7 @@
 #' Fitting MRMME via Chan and Mak estimators
 #'
 #' @param X covariates matrix. It has dimension n x p.
-#' @param Y response variable matrix. It has dimension n x q.
+#' @param Y response variables matrix. It has dimension n x q.
 #'
 fit_ChanMak <- function(X, Y) {
   X <- as.matrix(X)

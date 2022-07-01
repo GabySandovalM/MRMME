@@ -3,25 +3,40 @@
 #' `mrmme` is used to fit an estructural multivariate regression model when the covariates are measured
 #' with error.
 #'
-#' @param Y A matrix or a data frame of \eqn{n} rows and \eqn{q} columns, where \eqn{n} is the number of
-#' observations and \eqn{q} is the number of response variables.
-#' @param X A matrix or a data frame of \eqn{n} rows and \eqn{p} columns, where \eqn{n} is the number of
+#' @param Y a matrix or a data frame of \emph{n} rows and \emph{q} columns, where \emph{n} is the number of
+#' observations and \emph{q} is the number of response variables.
+#' @param X a matrix or a data frame of \emph{n} rows and \emph{p} columns, where \emph{n} is the number of
 #' observations and \eqn{p} is the number of covariates.
-#' @param method method to be used in parameter estimation. Two are available:
-#'  * `ChanMak` (the default): estimators based on Chan and Mak (1894).
-#'  * `EM`: run an EM algorithm.
-#' @param se.type type of estimator of the Fisher information matrix to compute the standard
-#' errors of the parameter estimates. Three are available: `empirical` (the default), `expected`, and `observed`.
+#' @param method the method to be used in parameter estimation. Two are available:
+#' `'ChanMak'` (the default) corresponds to estimators based on Chan and Mak (1984),
+#' and `'EM'` that run the EM algorithm for \strong{MRMMEs} proposed by.
+#' @param se.type the type of estimator of the Fisher information matrix to compute the standard
+#' errors of the parameter estimates. Three are available: `'empirical'` (the default), `'expected'`, and `'observed'`.
 #'
-#' @param ... For `mrmme()` other arguments could be passed.
+#' @param ... For `mrmme()` other arguments could be passed (see below).
 #'
-#' @param crit convergence criterion when `EM` algorithm is used for parameter estimation.
-#'  The default is \eqn{1e-10}.
+#' @param crit a numeric value giving the convergence criterion when `'EM'` algorithm is used for parameter estimation.
+#' The default is 1e-10.
 #'
-#' @return
+#' @details
+#'  Agregar
+#'
+#' @return An object of class `mrmme`. The output contains the parameter estimates,
+#' standard errors, metrics of the model, and the data.
 #' @export
 #'
+#' @references
+#'
+#' @seealso
+#' \code{\link{autoplot.mrmme}}, \code{\link{influence.mrmme}}, \code{\link{residuals.mrmme}}
+#'
 #' @examples
+#' X <- cbind(lung$X1,lung$X2)
+#' Y <- cbind(lung$Y1,lung$Y2)
+#' fit <- mrmme(X=X, Y=Y)
+#' class(fit)
+#' names(fit)
+
 mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
 
   Y = as.matrix(Y)
@@ -38,7 +53,7 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
     fit <- fit_ChanMak(X,Y)
   }else{
     if(method == "EM"){
-      fit <- fit_EM(X,Y)
+      fit <- fit_EM(X,Y,...)
     }else{
       stop("The only two methods of estimation are 'ChanMak' and 'EM'")
     }
@@ -70,7 +85,7 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
   estim <- data.frame(Estimate = round(fit$theta,3),
                       "Std. Error" = paste0("(",round(se.fit$se,3),")"),
                       "z value" = round(fit$theta/se.fit$se,3),
-                      "Pr(>|z|)" = pnorm(q = abs(fit$theta)/se.fit$se,
+                      "Pr(>|z|)" = stats::pnorm(q = abs(fit$theta)/se.fit$se,
                                          lower.tail = FALSE),
                       check.names = FALSE)
 
@@ -92,7 +107,7 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
 
   cat('AIC:',fit$AIC, 'BIC:',fit$BIC,'\n')
   cat('Obs. loglik:', fit$logL, '\n')
-  cat('Number of iterations:', fit$iter, \n)
+  cat('Number of iterations:', fit$iter, '\n')
 
   # Output ------------------------------------------------------------------
 
@@ -104,8 +119,10 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
                    "phi" = fit$phi,
                    "mu.x" = fit$mu_x,
                    "Sigma.x" = fit$Sigma_x,
-                   "coef" = fit$coef,
+                   #"coef" = fit$coef,
                    "theta" = fit$theta,
+                   "se.fit" = se.fit,
+                   "se.type" = se.type,
                    "AIC" = fit$AIC,
                    "BIC" = fit$BIC,
                    "logL" = fit$logL,
@@ -116,8 +133,10 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
              "phi" = fit$phi,
              "mu.x" = fit$mu_x,
              "Sigma.x" = fit$Sigma_x,
-             "coef" = fit$coef,
+             #"coef" = fit$coef,
              "theta" = fit$theta,
+             "se.fit" = se.fit,
+             "se.type" = se.type,
              "AIC" = fit$AIC,
              "BIC" = fit$BIC,
              "logL" = fit$logL,

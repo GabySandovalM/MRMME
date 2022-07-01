@@ -1,7 +1,7 @@
 #' Fitting MRMME via EM algorithm.
 #'
 #' @param X covariates matrix. It has dimension n x p.
-#' @param Y response variable matrix. It has dimension n x q.
+#' @param Y response variables matrix. It has dimension n x q.
 #' @param crit convergence criterion. Default is 1e-10.
 #'
 #'
