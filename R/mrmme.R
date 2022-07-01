@@ -1,15 +1,28 @@
 #' Fitting a multivariate regression model with measurement errors
 #'
-#' @param Y
-#' @param X
-#' @param type
-#' @param se.type
+#' `mrmme` is used to fit an estructural multivariate regression model when the covariates are measured
+#' with error.
+#'
+#' @param Y A matrix or a data frame of \eqn{n} rows and \eqn{q} columns, where \eqn{n} is the number of
+#' observations and \eqn{q} is the number of response variables.
+#' @param X A matrix or a data frame of \eqn{n} rows and \eqn{p} columns, where \eqn{n} is the number of
+#' observations and \eqn{p} is the number of covariates.
+#' @param method method to be used in parameter estimation. Two are available:
+#'  * `ChanMak` (the default): estimators based on Chan and Mak (1894).
+#'  * `EM`: run an EM algorithm.
+#' @param se.type type of estimator of the Fisher information matrix to compute the standard
+#' errors of the parameter estimates. Three are available: `empirical` (the default), `expected`, and `observed`.
+#'
+#' @param ... For `mrmme()` other arguments could be passed.
+#'
+#' @param crit convergence criterion when `EM` algorithm is used for parameter estimation.
+#'  The default is \eqn{1e-10}.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-mrmme <- function(Y, X, type = "ChanMak", se.type = "empirical", ...) {
+mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
 
   Y = as.matrix(Y)
   X = as.matrix(X)
@@ -21,13 +34,13 @@ mrmme <- function(Y, X, type = "ChanMak", se.type = "empirical", ...) {
   if(any(is.na(Y))) stop("There are some NAs values in Y matrix.")
   if(any(is.na(X))) stop("There are some NAs values in the X design matrix.")
 
-  if(type == "ChanMak"){
+  if(method == "ChanMak"){
     fit <- fit_ChanMak(X,Y)
   }else{
-    if(type == "EM"){
+    if(method == "EM"){
       fit <- fit_EM(X,Y)
     }else{
-      stop("The only two models available are 'ChanMak' and 'EM'")
+      stop("The only two methods of estimation are 'ChanMak' and 'EM'")
     }
   }
 
@@ -40,7 +53,8 @@ mrmme <- function(Y, X, type = "ChanMak", se.type = "empirical", ...) {
       if(se.type == "observed"){
         se.fit <- se_N(fit$theta,fit$X,fit$Y, type = "obs")
       }else{
-        stop("The only three methods for SEs computation are...")
+        stop("The only three methods for SEs computation are 'empirical',
+             'expected' and 'observed'")
       }
     }
   }
@@ -78,6 +92,7 @@ mrmme <- function(Y, X, type = "ChanMak", se.type = "empirical", ...) {
 
   cat('AIC:',fit$AIC, 'BIC:',fit$BIC,'\n')
   cat('Obs. loglik:', fit$logL, '\n')
+  cat('Number of iterations:', fit$iter, \n)
 
   # Output ------------------------------------------------------------------
 
