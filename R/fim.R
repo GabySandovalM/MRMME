@@ -1,14 +1,16 @@
-#' Title
+#' The Fisher information matrix estimate in MRMME.
 #'
-#' @param theta
-#' @param X
-#' @param Y
-#' @param type
+#' Allows getting the estimate Fisher information matrix using three different estimators.
 #'
-#' @return
+#' @param theta a vector with the parameter estimates.
+#' @param X covariates matrix. It has dimension n x p.X
+#' @param Y response variables matrix. It has dimension n x q.
+#' @param type the type of estimator of the Fisher information matrix:
+#' `empirical`(the default), `expected`, `observed`.
 #'
-#' @examples
-fim_N <- function(theta, X, Y, type = "emp") {
+#' @return a symmetric matrix.
+#'
+fim <- function(theta, X, Y, type = "emp") {
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   n <- dim(Y)[1]
@@ -200,33 +202,33 @@ fim_N <- function(theta, X, Y, type = "emp") {
     # join together by rows
     fim_CM <- rbind(a, B, phi, mu, S)
     fim_CM <- 0.5 * (fim_CM + t(fim_CM)) # this is the FIM total
-    colnames(fim_CM) <- nam(p, q)
-    rownames(fim_CM) <- nam(p, q)
+    colnames(fim_CM) <- nms(p, q)
+    rownames(fim_CM) <- nms(p, q)
     fim_CM # this is the FIM total
 
   } else {
     # observed ----
     if (type == "obs") {
       fim_obs <- -numDeriv::jacobian(
-        func = score_matrix_N,
+        func = score_matrix,
         x = theta,
         X = X,
         Y = Y,
         total = TRUE
       )
-      colnames(fim_obs) <- nam(p, q)
-      rownames(fim_obs) <- nam(p, q)
+      colnames(fim_obs) <- nms(p, q)
+      rownames(fim_obs) <- nms(p, q)
       fim_obs <-  0.5 * (fim_obs + t(fim_obs))
       fim_obs # This is the FIM total
 
     } else {
       # empirical ----
       if (type == "emp") {
-        score_mat <- score_matrix_N(theta, X, Y)
+        score_mat <- score_matrix(theta, X, Y)
         fim_emp <- crossprod(score_mat)
         fim_emp <- 0.5 * (fim_emp + t(fim_emp))
-        colnames(fim_emp) <- nam(p, q)
-        rownames(fim_emp) <- nam(p, q)
+        colnames(fim_emp) <- nms(p, q)
+        rownames(fim_emp) <- nms(p, q)
         fim_emp # This is the FIM total
       }
     }

@@ -1,12 +1,14 @@
-#' Title
+#' Observed log-likelihood in MRMME.
 #'
-#' @param theta
-#' @param X
-#' @param Y
+#' Compute the observed log-likelihood in a MRMME.
 #'
-#' @return
+#' @param theta a vector with the parameter estimates.
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variables matrix. It has dimension n x q.
 #'
-#' @examples
+#' @return A numeric value of the observed log-likelihood in a MRMME given the
+#' MLE estimates of theta.
+#'
 logL <- function(theta, X, Y) {
   X <- as.matrix(X)
   Y <- as.matrix(Y)

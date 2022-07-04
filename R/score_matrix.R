@@ -1,14 +1,21 @@
-#' Title
+#' Computes the score vectors in MRMME.
 #'
-#' @param theta
-#' @param X
-#' @param Y
-#' @param total
+#' Given the MLE estimates of theta and the observed data, this function
+#' computes the individual score vector for each observation.
 #'
-#' @return
+#' @param theta a vector with the parameter estimates.
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variables matrix. It has dimension n x q.
+#' @param total if `FALSE` (the default) returns the score matrix of dimension
+#' n x d, where n is the number of observations and d is the total number of parameters.
+#' It means the i\emph{th} row corresponds to the i\emph{th} score vector.
+#' If `TRUE` returns a d-dimensional score vector (the sum of the score matrix columns).
 #'
-#' @examples
-score_matrix_N <- function(theta, X, Y, total = FALSE) {
+#'
+#' @return if `total = TRUE` it returns a matrix. If `total = FALSE` it returns a vector that corresponds
+#' to the total score. Given the MLE, each element in the total score is approximately equal to zero.
+#'
+score_matrix <- function(theta, X, Y, total = FALSE) {
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   Z <- cbind(X, Y)
@@ -197,7 +204,7 @@ score_matrix_N <- function(theta, X, Y, total = FALSE) {
 
   # score matrix----
   score_theta <- cbind(score_a, score_b, score_phi, score_mu, score_Sigma)
-  colnames(score_theta) <- nam(p, q)
+  colnames(score_theta) <- nms(p, q)
 
   if (total == TRUE) {
     score_t <- colSums(score_theta)

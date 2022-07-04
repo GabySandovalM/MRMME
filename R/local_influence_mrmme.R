@@ -1,12 +1,11 @@
-#' Title
+#' Local influence diagnostics in MRMME
 #'
-#' @param theta
-#' @param X
-#' @param Y
+#' @param theta a vector with the parameter estimates.
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variables matrix. It has dimension n x q.
 #'
 #' @return
 #'
-#' @examples
 influence_mrmme <- function(theta, X, Y) {
   X <- as.matrix(X)
   Y <- as.matrix(Y)
@@ -85,7 +84,7 @@ influence_mrmme <- function(theta, X, Y) {
     }
     Delta_1[, j] <- Delta_j
   }
-  rownames(Delta_1) <- nam(p, q)
+  rownames(Delta_1) <- nms(p, q)
 
 
   # Esquema 2 ---------------------------------------------------------------
@@ -110,7 +109,7 @@ influence_mrmme <- function(theta, X, Y) {
         Q_iSigma_omega)
     Delta_2[, i] <- Delta_i
   }
-  rownames(Delta_2) <- nam(p, q)
+  rownames(Delta_2) <- nms(p, q)
 
   # B_inf1 -------------------------------------------------------------------
   F_inf_1 <- t(Delta_1) %*% Rfast::spdinv(-Qpp) %*% Delta_1
