@@ -12,9 +12,6 @@
 #' and `'EM'` that run the EM algorithm for \strong{MRMMEs} proposed by.
 #' @param se.type the type of estimator of the Fisher information matrix to compute the standard
 #' errors of the parameter estimates. Three are available: `'empirical'` (the default), `'expected'`, and `'observed'`.
-#'
-#' @param ... For `mrmme()` other arguments could be passed (see below).
-#'
 #' @param crit a numeric value giving the convergence criterion when `'EM'` algorithm is used for parameter estimation.
 #' The default is 1e-10.
 #'
@@ -37,7 +34,7 @@
 #' class(fit)
 #' names(fit)
 
-mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
+  mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", crit = 1e-10) {
 
   Y = as.matrix(Y)
   X = as.matrix(X)
@@ -53,20 +50,20 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
     fit <- fit_ChanMak(X,Y)
   }else{
     if(method == "EM"){
-      fit <- fit_EM(X,Y,...)
+      fit <- fit_EM(X,Y,crit)
     }else{
       stop("The only two methods of estimation are 'ChanMak' and 'EM'")
     }
   }
 
   if(se.type == "empirical"){
-    se.fit <- se_N(fit$theta,fit$X,fit$Y, type = "emp")
+    se.fit <- se(fit$theta,fit$X,fit$Y, type = "emp")
   }else{
     if(se.type == "expected"){
-      se.fit <- se_N(fit$theta,fit$X,fit$Y, type = "exp")
+      se.fit <- se(fit$theta,fit$X,fit$Y, type = "exp")
     }else{
       if(se.type == "observed"){
-        se.fit <- se_N(fit$theta,fit$X,fit$Y, type = "obs")
+        se.fit <- se(fit$theta,fit$X,fit$Y, type = "obs")
       }else{
         stop("The only three methods for SEs computation are 'empirical',
              'expected' and 'observed'")
@@ -89,7 +86,7 @@ mrmme <- function(Y, X, method = "ChanMak", se.type = "empirical", ...) {
                                          lower.tail = FALSE),
                       check.names = FALSE)
 
-  rownames(estim) <- nam2(dim(Y)[2],dim(X)[2])
+  rownames(estim) <- nms(dim(Y)[2],dim(X)[2],TRUE)
 
   asteriscos = sapply(X = estim[,4],FUN = defast)
   estim      = data.frame(estim," " = asteriscos,

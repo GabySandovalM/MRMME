@@ -1,13 +1,12 @@
-#' Title
+#' Fitting restricted MRMME via EM algorithm
 #'
-#' @param X1
-#' @param X2
-#' @param Y
-#' @param crit
+#' @param X1 a matrix of covariates to be tested with dimension n x p1.
+#' It is a subset of X.
+#' @param X2 a matrix of covariates with dimension n x p2. It is a subset of X
+#' that does not include the p1 covariates in `X1`.
+#' @param Y response variables matrix. It has dimension n x q.
+#' @param crit convergence criterion. Default is 1e-10.
 #'
-#' @return
-#'
-#' @examples
 fit_EMtest <- function(X1, X2, Y, crit = 1e-10) {
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
@@ -23,18 +22,18 @@ fit_EMtest <- function(X1, X2, Y, crit = 1e-10) {
   Z <- cbind(X, Y)
 
   # Initial Values ----
-  # mod_lm <- lm(Y ~ X2)
-  # a <- matrix(coef(mod_lm)[1,],ncol=1) # lm
-  # B2 <- t(coef(mod_lm)[-1,]) # lm
-  # phi <- 1
-  # mu_x <- colMeans(X) # observed
-  # Sigma_x <- stats::cov(X) # observed
-
-  a <- rep(0, p)
-  B2 <- matrix(0, nrow = q, ncol = p2)
+  mod_lm <- stats::lm(Y ~ X2)
+  a <- matrix(stats::coef(mod_lm)[1,],ncol=1) # lm
+  B2 <- t(stats::coef(mod_lm)[-1,]) # lm
   phi <- 1
-  mu_x <- rep(0, p)
-  Sigma_x <- diag(1, p)
+  mu_x <- colMeans(X) # observed
+  Sigma_x <- stats::cov(X) # observed
+
+  # a <- rep(0, p)
+  # B2 <- matrix(0, nrow = q, ncol = p2)
+  # phi <- 1
+  # mu_x <- rep(0, p)
+  # Sigma_x <- diag(1, p)
 
   #log-likelihood
   B <- matrix(c(rep(0, (q * p1)), B2), nrow = q, ncol = p)
@@ -119,8 +118,10 @@ fit_EMtest <- function(X1, X2, Y, crit = 1e-10) {
     dif <- abs((logL_k1 / logL_k) - 1)
     logL_k <- logL_k1
   }
-  names(theta_est) <- nam(p, q)
+  names(theta_est) <- nms(p, q)
   AIC <- 2 * d - 2 * logL(theta_est, X = X, Y = Y)
+  BIC <- d * log(n) - 2 * logL(theta_est, X = X, Y = Y)
+
 
   res <- list(
     "a" = a,
@@ -131,10 +132,9 @@ fit_EMtest <- function(X1, X2, Y, crit = 1e-10) {
     "coef" = cbind(a, B),
     "theta" = theta_est,
     "d" = d,
-    #"iter" = s,
-    #"dif" = dif,
-    "logL" = logL_k,
-    "AIC" = AIC
+    "AIC" = AIC,
+    "BIC" = BIC,
+    "logL" = logL_k
   )
   res
 }

@@ -1,14 +1,18 @@
-#' Title
+#' Hypothesis testing in MRMME
+#'#'
+#' @param X covariates matrix. It has dimension n x p.
+#' @param Y response variables matrix. It has dimension n x q.
+#' @param vars.pos  a numerical value indicating the position (column number in X)
+#' of the covariate to be tested. By default test the first covariate.
+#' @param fim.type the type of estimator of the Fisher information matrix:
+#' `empirical`(the default), `expected`, `observed`.
+#' @param crit a numeric value giving the convergence criterion when using
+#' the EM algorithm to get the estimates under the restricted model. The default is 1e-10.
 #'
-#' @param X
-#' @param Y
-#' @param vars.pos
-#' @param FIM
+#' @return  a list with: statistics and p-values for testing \eqn{H_0}, number of parameters,
+#' parameter estimates, AIC, BIC, log-likelihood for both restricted and non-restricted models.
 #'
-#' @return
-#'
-#' @examples
-test_mrmme <- function(X, Y, vars.pos = 1, FIM = "emp", crit = 1e-10) {
+test_mrmme <- function(X, Y, vars.pos = 1, fim.type = "emp", crit = 1e-10) {
   Y <- as.matrix(Y)
   X <- as.matrix(X)
   X1 <- as.matrix(X[, c(vars.pos)])
@@ -29,7 +33,7 @@ test_mrmme <- function(X, Y, vars.pos = 1, FIM = "emp", crit = 1e-10) {
 
   theta_tilde <- mod_r$theta
   theta_hat <- mod_nr$theta
-  S_tilde <- matrix(score_matrix_N(theta_tilde, X, Y, total = TRUE), ncol = 1)
+  S_tilde <- matrix(score_matrix(theta_tilde, X, Y, total = TRUE), ncol = 1)
 
   # A matrix and g vector
   k <- p1 * q
@@ -39,16 +43,16 @@ test_mrmme <- function(X, Y, vars.pos = 1, FIM = "emp", crit = 1e-10) {
               0,
               rep(0, p),
               rep(0, p_s)))
-  colnames(A) <- nam(p, q)
-  rownames(A) <- nam(p, q)
+  colnames(A) <- nms(p, q)
+  rownames(A) <- nms(p, q)
   A <- A[colSums(A) != 0, ]
   g <- matrix(rep(0, k), ncol = 1)
 
   # Information
-  FIM_tilde <- fim_N(theta_tilde, X, Y, type = FIM)
+  FIM_tilde <- fim(theta_tilde, X, Y, type = fim.type)
   FIM_inv_tilde <- Rfast::spdinv(FIM_tilde)
 
-  FIM_hat <- fim_N(theta_hat, X, Y, type = FIM)
+  FIM_hat <- fim(theta_hat, X, Y, type = fim.type)
   FIM_inv_hat <- Rfast::spdinv(FIM_hat)
 
   # LR
@@ -81,26 +85,26 @@ test_mrmme <- function(X, Y, vars.pos = 1, FIM = "emp", crit = 1e-10) {
   AIC_nr <- mod_nr$AIC
   AIC_r <- mod_r$AIC
 
-  BIC_nr <- d_nr * log(n) - 2 * mod_nr$logL
-  BIC_r <- d_r * log(n) - 2 * mod_r$logL
+  BIC_nr <- mod_nr$BIC
+  BIC_r <- mod_r$BIC
 
   logL_nr <- mod_nr$logL
   logL_r <- mod_r$logL
 
   results <- list(
     "stat" = statistics,
-    "p-value" = p.value,
+    "p.value" = p.value,
     "df" = df,
-    "tilde" = theta_tilde,
-    "hat" = theta_hat,
-    "d_r" = d_r,
-    "d_nr" = d_nr,
-    "AIC_r" = AIC_r,
-    "AIC_nr" = AIC_nr,
-    "logL_r" = logL_r,
-    "logL_nr" = logL_nr,
-    "BIC_r" = BIC_r,
-    "BIC_nr" = BIC_nr
+    "theta.tilde" = theta_tilde,
+    "theta.hat" = theta_hat,
+    "d.r" = d_r,
+    "d.nr" = d_nr,
+    "AIC.r" = AIC_r,
+    "AIC.nr" = AIC_nr,
+    "BIC.r" = BIC_r,
+    "BIC.nr" = BIC_nr,
+    "logL.r" = logL_r,
+    "logL.nr" = logL_nr
   )
   results
 }

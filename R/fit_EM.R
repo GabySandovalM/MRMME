@@ -4,7 +4,6 @@
 #' @param Y response variables matrix. It has dimension n x q.
 #' @param crit convergence criterion. Default is 1e-10.
 #'
-#'
 fit_EM <- function(X, Y, crit = 1e-10) {
   X <- as.matrix(X)
   Y <- as.matrix(Y)
@@ -94,7 +93,7 @@ fit_EM <- function(X, Y, crit = 1e-10) {
     dif  <- abs((logL_k1 / logL_k) - 1)
     logL_k <- logL_k1
   }
-  names(theta_est) <- nam2(p, q)
+  names(theta_est) <- nms(p, q, TRUE)
 
 # Results -----------------------------------------------------------------
 

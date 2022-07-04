@@ -1,21 +1,24 @@
-#' Title
+#' Simulate data from a MRMME
 #'
-#' @param n
-#' @param p
-#' @param q
-#' @param a
-#' @param B
-#' @param phi
-#' @param mu_x
-#' @param Sigma_x
-#' @param testB
-#' @param vars.pos
+#' @param n number of observations.
+#' @param p number of covariates.
+#' @param q number of response variables.
+#' @param a vector of intercepts.
+#' @param B a matrix fo regression coefficients.
+#' @param phi a numeric value representing the measurement error variance.
+#' @param mu_x mean vector of the unobserved covariates.
+#' @param Sigma_x covariance matrix of the unobserved covariates.
+#' @param testB if `TRUE` the function return \emph{Y} simulates under \eqn{H_0}.
+#' The default value is `FALSE``.`
+#' @param vars.pos a numerical value indicating the position (column number in X)
+#' of the covariate to be tested under \eqn{H_0}. By default the function the
+#' assume the covariate tho be tested is the first.
 #'
-#' @return
+#' @return a list with simulated data from a MRMME and the parameters used to simulate.
 #'
-#' @examples
 sim_Ndata <- function(n, p, q, a, B, phi, mu_x, Sigma_x, testB = FALSE, vars.pos = c(1)) {
   r <- p + q
+
   # True x values, from a N(mu_x, Sigma_x)
   x <- matrix(, ncol = p, nrow = n)
   for (i in 1:n) {
@@ -66,7 +69,7 @@ sim_Ndata <- function(n, p, q, a, B, phi, mu_x, Sigma_x, testB = FALSE, vars.pos
   psi <- Lambda %*% Sigma_x %*% t(Lambda) + diag(phi, r, r)
 
   theta_sim <- c(a, B, phi, mu_x, matrixcalc::vech(Sigma_x))
-  names(theta_sim) <- nam(p, q)
+  names(theta_sim) <- nms(p, q)
 
   # Resultados
   data = list(
@@ -76,8 +79,8 @@ sim_Ndata <- function(n, p, q, a, B, phi, mu_x, Sigma_x, testB = FALSE, vars.pos
     "a" = a,
     "B" = B,
     "phi" = phi,
-    "mu_x" = mu_x,
-    "Sigma_x" = Sigma_x,
+    "mu.x" = mu_x,
+    "Sigma.x" = Sigma_x,
     "eta" = eta,
     "psi" = psi,
     "theta" = theta_sim
@@ -89,13 +92,13 @@ sim_Ndata <- function(n, p, q, a, B, phi, mu_x, Sigma_x, testB = FALSE, vars.pos
     data_h0 = list(
       "X" = X,
       "Y" = Y,
-      "Y_h0" = Y_h0,
+      "Y.h0" = Y_h0,
       "Z" = Z,
       "a" = a,
       "B" = B,
       "phi" = phi,
-      "mu_x" = mu_x,
-      "Sigma_x" = Sigma_x,
+      "mu.x" = mu_x,
+      "Sigma.x" = Sigma_x,
       "eta" = eta,
       "psi" = psi,
       "theta" = theta_sim
@@ -103,3 +106,4 @@ sim_Ndata <- function(n, p, q, a, B, phi, mu_x, Sigma_x, testB = FALSE, vars.pos
     return(data_h0)
   }
 }
+

@@ -1,6 +1,6 @@
 #' Influence measures in MRMME
 #'
-#' @param model
+#' @param model a mrmme object.
 #'
 #' @return
 #' @importFrom stats influence

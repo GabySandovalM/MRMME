@@ -48,7 +48,7 @@ fit_ChanMak <- function(X, Y) {
   Sigma_hat <- 0.5 * (Sigma_hat + t(Sigma_hat))
 
   theta <- c(a_hat,B_hat,phi_hat,mu_hat, matrixcalc::vech(Sigma_hat))
-  names(theta) <- nam2(p,q)
+  names(theta) <- nms(p,q,TRUE)
 
   AIC <- 2 * d - 2 * logL(theta, X = X, Y = Y)
   BIC <- d * log(n) - 2 * logL(theta, X = X, Y = Y)

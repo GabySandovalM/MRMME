@@ -2,9 +2,9 @@
 #'
 #' @param X covariates matrix. It has dimension n x p.
 #' @param Y response variables matrix. It has dimension n x q.
-#' @param theta a vector with teh parameter estimates.
+#' @param theta a vector with the parameter estimates.
 #' @param nsim A numeric value that indicate the number of simulation used to compute the envelopes.
-#' By default are 50.
+#' By default is 50.
 #' @param conf A numeric value between 0 and 1, that indicate the confidence level used to compute the envelopes.
 #' By default is 0.95
 #' @param plot.all if `TRUE` displays the qq-plot of Z, Y and X. If `FALSE` (the default) displays the qq-plot of Z.
@@ -48,11 +48,10 @@ qqplot_Nmrmme <-
 
 
     wh <- data.frame(
-      N_wilson_hilferty(X, mu_x, Sigma_x),
-      N_wilson_hilferty(Y, mu_Y, Sigma_Y),
-      N_wilson_hilferty(Z, eta, psi)
+      X = N_wilson_hilferty(X, mu_x, Sigma_x),
+      Y = N_wilson_hilferty(Y, mu_Y, Sigma_Y),
+      Z = N_wilson_hilferty(Z, eta, psi)
     )
-    colnames(wh) <- c("X", "Y", "Z")
     bands <- envlp(X, Y,
                    theta,
                    nsim = nsim,
@@ -62,29 +61,60 @@ qqplot_Nmrmme <-
     bandZ <- bands$bandZ
 
     #Grafico de Z
+    data_plot_Z <- data.frame(cbind(wh$Z, bandZ))
+    colnames(data_plot_Z) <- c("Z.wh","Z.env.lo", "Z.env.up")
+    data_plot_X <- data.frame(cbind(wh$X, bandX))
+    colnames(data_plot_X) <- c("X.wh","X.env.lo", "X.env.up")
+    data_plot_Y <- data.frame(cbind(wh$Y, bandY))
+    colnames(data_plot_Y) <- c("Y.wh","Y.env.lo", "Y.env.up")
+
     plots <- list()
-    plots[["Z"]]  <- ggplot2::ggplot(data.frame(cbind(wh$Z, bandZ))) +
-      ggplot2::stat_qq(ggplot2::aes(sample = X1), size = 0.8) +
-      ggplot2::geom_qq(ggplot2::aes(sample = X2), col = "red", geom = "path") +
-      ggplot2:: geom_qq(ggplot2::aes(sample = X3), col =  "red", geom = "path") +
-      ggplot2::geom_abline(slope = 1, intercept = 0, col = "gray40", size=0.3) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
-      ggplot2::labs(title = "Z")
+    # plots[["Z"]]  <- ggplot2::ggplot(data_plot_Z) +
+    #   ggplot2::stat_qq(ggplot2::aes(sample = .data$Z.wh), size = 0.8) +
+    #   ggplot2::geom_qq(ggplot2::aes(sample = .data$Z.env.lo), col = "red", geom = "path") +
+    #   ggplot2::geom_qq(ggplot2::aes(sample = .data$Z.env.up), col =  "red", geom = "path") +
+    #   ggplot2::geom_abline(slope = 1, intercept = 0, col = "gray40", size=0.3) +
+    #   ggplot2::theme_bw() +
+    #   ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+    #   ggplot2::labs(title = "Z")
+    #
+    # plots[["X"]] <- ggplot2::ggplot(data_plot_X) +
+    #   ggplot2::stat_qq(ggplot2::aes(sample = .data$X.wh), size = 0.8) +
+    #   ggplot2::geom_qq(ggplot2::aes(sample = .data$X.env.lo), col = "red", geom = "path") +
+    #   ggplot2::geom_qq(ggplot2::aes(sample = .data$X.env.up), col =  "red", geom = "path") +
+    #   ggplot2::theme_bw() +
+    #   ggplot2::labs(title = "X")
+    #
+    # plots[["Y"]] <- ggplot2::ggplot(data_plot_Y) +
+    #   ggplot2::stat_qq(ggplot2::aes(sample = .data$Y.wh), size = 0.8) +
+    #   ggplot2::geom_qq(ggplot2::aes(sample = .data$Y.env.lo), col = "red", geom = "path") +
+    #   ggplot2::geom_qq(ggplot2::aes(sample = .data$Y.env.up), col =  "red", geom = "path") +
+    #   ggplot2::theme_bw() +
+    #   ggplot2::labs(title = "Y")
 
-    plots[["X"]] <- ggplot2::ggplot(data.frame(cbind(wh$X, bandX))) +
-      ggplot2::stat_qq(ggplot2::aes(sample = X1), size = 0.8) +
-      ggplot2::geom_qq(ggplot2::aes(sample = X2), col = "red", geom = "path") +
-      ggplot2::geom_qq(ggplot2::aes(sample = X3), col =  "red", geom = "path") +
-      ggplot2::theme_bw() +
-      ggplot2::labs(title = "X")
+    plots[["Z"]]  <- ggplot(data_plot_Z) +
+      stat_qq(aes(sample = .data$Z.wh), size = 0.8) +
+      geom_qq(aes(sample = .data$Z.env.lo), col = "red", geom = "path") +
+      geom_qq(aes(sample = .data$Z.env.up), col =  "red", geom = "path") +
+      geom_abline(slope = 1, intercept = 0, col = "gray40", size=0.3) +
+      theme_bw() +
+      theme(panel.grid.minor = element_blank()) +
+      labs(title = "Z")
 
-    plots[["Y"]] <- ggplot2::ggplot(data.frame(cbind(wh$Y, bandY))) +
-      ggplot2::stat_qq(ggplot2::aes(sample = X1), size = 0.8) +
-      ggplot2::geom_qq(ggplot2::aes(sample = X2), col = "red", geom = "path") +
-      ggplot2::geom_qq(ggplot2::aes(sample = X3), col =  "red", geom = "path") +
-      ggplot2::theme_bw() +
-      ggplot2::labs(title = "Y")
+    plots[["X"]] <- ggplot(data_plot_X) +
+      stat_qq(aes(sample = .data$X.wh), size = 0.8) +
+      geom_qq(aes(sample = .data$X.env.lo), col = "red", geom = "path") +
+      geom_qq(aes(sample = .data$X.env.up), col =  "red", geom = "path") +
+      theme_bw() +
+      labs(title = "X")
+
+    plots[["Y"]] <- ggplot(data_plot_Y) +
+      stat_qq(aes(sample = .data$Y.wh), size = 0.8) +
+      geom_qq(aes(sample = .data$Y.env.lo), col = "red", geom = "path") +
+      geom_qq(aes(sample = .data$Y.env.up), col =  "red", geom = "path") +
+      theme_bw() +
+      labs(title = "Y")
+
 
     if (plot.all) {
       if (!requireNamespace("patchwork", quietly = TRUE)) {
@@ -96,7 +126,7 @@ qqplot_Nmrmme <-
       (plots$Z | (plots$X / plots$Y)) +
         patchwork::plot_annotation(title = "QQ-plot of the transformed distances")
     } else {
-      plots$Z # +
-      # patchwork::plot_annotation(title = "QQ-plot of the transformed distances")
+      plots$Z  +
+      patchwork::plot_annotation(title = "QQ-plot of the transformed distances")
     }
   }
