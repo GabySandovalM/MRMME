@@ -18,6 +18,3 @@ You can install the development version of MRMME from
 devtools::install_github("GabySandovalM/MRMME")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
